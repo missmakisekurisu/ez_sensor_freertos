@@ -85,6 +85,7 @@ static void DHT11_read_task(void){
 void DHT11_main_task(void){
     if(get_tempo_flag(DHT11_TASK)){
         DHT11_read_task();
-		}
+				clear_tempo_flag(DHT11_TASK);
+		}		
 }	
 

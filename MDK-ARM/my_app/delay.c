@@ -33,8 +33,6 @@ void delay_us(uint32_t delay_us)
 {   
   volatile unsigned int num;
   volatile unsigned int t;
-
-
   for (num = 0; num < delay_us; num++)
   {
     t = 6;
@@ -47,22 +45,21 @@ void delay_us(uint32_t delay_us)
 
 
 
-
 volatile TEMPO_TYPE appTempo[TEMPO_COUNT]={
-    {0, 1000U, 100, 0},
-    {0, 2000u, 100, 0},
+    {0, 1000u, 0, 0},
+    {0, 1500u, 0, 0},
 };
     
 
 
-static void update_app_timer(volatile TEMPO_TYPE *t){
+static void update_app_tempo(volatile TEMPO_TYPE *t){
 	for(uint8_t i = 0; i < TEMPO_COUNT; i++){
-		if(t[i].counter++ >= t[i].num || t[i].flag){
-			t[i].flag ++; 
-			t[i].counter = 0;    
-		}
-		if(t[i].flag >= t[i].pendingTime){
-			t[i].flag = 0;
+		volatile TEMPO_TYPE* p = &t[i];
+		if((p->counter < p->num)&&(p->flag == 0)){
+			p->counter++;
+		}else{
+			p->flag = 1;
+			p->counter = 0;
 		}
 	}
 }
@@ -80,9 +77,16 @@ void TEMPO_TIM_IRQHandler(void)
 
 /*put in tim_irqHandler*/
 void tempo_task(void){
-	update_app_timer(appTempo);
+	update_app_tempo(appTempo);
 }
 
 bool get_tempo_flag(TEMPO_NAME_TYPE n){
+//	uint8_t k = appTempo[n].flag;
+//	if(k != 0){appTempo[n].flag = 0;}
+//	return k;
 	return (appTempo[n].flag != 0);
 }	
+
+void clear_tempo_flag(TEMPO_NAME_TYPE n){
+	appTempo[n].flag = 0;
+}

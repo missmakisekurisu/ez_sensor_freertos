@@ -1,29 +1,8 @@
 #include "oled.h"
 #include "oledfont.h"
 #include "dht11.h"
-
-//void ssd1306_generate_a_frame(uint8_t *p, uint16_t size){	
-//	OLED_WR_CMD(0X20);	// 设置GDDRAM模式
-//    
-//	OLED_WR_CMD(0X00);	// 水平寻址模式 
-//    
-//	OLED_WR_CMD(0X21);	// 设置列起始和结束地址
-//	OLED_WR_CMD(0X00);	// 列起始地址 0
-//	OLED_WR_CMD(0X7F);	// 列终止地址 127
-//    
-//	OLED_WR_CMD(0X22);	// 设置页起始和结束地址
-//	OLED_WR_CMD(0X00);	// 页起始地址 0
-//	OLED_WR_CMD(0X07);	// 页终止地址 7
-//	
-////	for(uint8_t i=0; i<row; i++){
-////        for(uint8_t j=0; j<col; j++){
-////            ssd1306_wr_data(&p[i*row+j], 1U);
-////        }
-////    }
-//    for(uint8_t i=0; i<size; i++){
-//        OLED_WR_DATA(p[i]);
-//    }
-//}
+#include "oled_i2c.h"
+#include "delay.h"
 
 //几个变量声明
 uint8_t **Hzk;
@@ -35,12 +14,7 @@ static uint8_t CMD_Data[]={
 0xC8, 0xD3, 0x00, 0xD5, 0x80, 0xD8, 0x05, 0xD9, 0xF1, 0xDA, 0x12,
 					
 0xD8, 0x30, 0x8D, 0x14, 0xAF};
-//static uint8_t CMD_Data[]={
-//0xAE, 0xD5, 0x80, 0xA8, 0x3F, 0xD3, 0x00, 0x00, 0x10, 0x40, 0x8D,
-//					
-//0x14, 0x20, 0x02, 0xA1, 0xC0, 0xDA, 0x12, 0x81, 0xEF, 0xD9, 0xF1,
-//					
-//0xDB, 0x30, 0xA4, 0xA6, 0xAF};
+
 void WriteDefaultCmd()
 {
 	uint8_t i = 0;
@@ -61,7 +35,7 @@ void OLED_WR_DATA(uint8_t data)
 //初始化oled屏幕
 void OLED_Init(void)
 { 	
-  HAL_Delay(250u);   
+  HAL_Delay(200u);   
 	WriteDefaultCmd();
 }
 //清屏size12 size16要清两行，其他函数有类似情况
@@ -214,12 +188,18 @@ static uint8_t humidity_char[] = {'h','u','m','i','d','i','t','y','\0'};
 static uint8_t heat_char[] = {'h','e','a','t','\0'};
 
 void display_task(void){
-    if(get_tempo_flag(OLED_FRESH)){
-        OLED_Clear();        
-        OLED_ShowNum(80,0,recDataDHT11[0],2,16);
-        OLED_ShowString(0,0,humidity_char, 16);
-        OLED_ShowNum(80,2,recDataDHT11[2],2,16);
-        OLED_ShowString(0,2,heat_char, 16);
-				OLED_ShowString(0,4,c_char, 16);
-    }
+	if(get_tempo_flag(OLED_FRESH)){
+//		OLED_Clear(); 
+//		OLED_ShowNum(80,0,(unsigned int)recDataDHT11[0],2,16);
+//		OLED_ShowString(0,0,humidity_char, 16);
+//		OLED_ShowNum(80,2,(unsigned int)recDataDHT11[2],2,16);
+//		OLED_ShowString(0,2,heat_char, 16);
+//		OLED_ShowString(0,4,c_char, 16);
+		test_oled();
+		clear_tempo_flag(OLED_FRESH);
+	}
+	
+
 }
+
+
